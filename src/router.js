@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Index from '@/Index.vue'
+import Team from '@/Team.vue'
 
 Vue.use(VueRouter)
 
@@ -27,7 +28,7 @@ export default new VueRouter({
     },
     {
       path: '/t/:teamname?',
-      component: load('Team'),
+      component: Team,
       name: 'Team'
     },
     {

@@ -12,8 +12,6 @@ div
       .col-md-3.col-lg-3.col-xl-3(v-if="authenticated")
         div
           q-card.relative-position.animate-scale
-            q-btn.absolute.infobtn(round small flat)
-              q-icon(name="help_outline" @click="$e.$emit('showInfoModal',info.power)")
             p.light-paragraph.text-center Boid Power
             div(style="margin:auto;")
               p.text-center {{fakeData.power}}
@@ -87,7 +85,7 @@ div
                 q-item-tile(label style="user-select: none;") {{device.name}}
                 q-item-tile(sublabel) {{device.status}}
               deviceChart.absolute-bottom-left(v-if="!device.toggle" style="left:190px;" :options='fakeData.chartOptions' :chart-data="fakeData.chartData[device.id]" :height="40" :width="200")
-              deviceChart.absolute-bottom-left(v-else-if="fakeData.chartData[device.id]" style="left:190px;" :options='fakeData.chartOptionsActive' :chart-data="fakeData.chartData[device.id]" :height="40" :width="200")
+              deviceChart.absolute-bottom-left(v-else-if="fakeData.chartData[device.id]" style="left:190px;" :options='fakeData.chartOptions' :chart-data="fakeData.chartData[device.id]" :height="40" :width="200")
                   //- q -icon.text-center(color="yellow" name='flash_on'
               //- h6.inline.float-right.text-green-4(v-if="device.toggle") {{ch.hps}}
               q-spinner-grid.inline.on-right(:size="20" color="grey-4" v-if="device.toggle")
@@ -193,8 +191,7 @@ export default {
               }
             ]
           }
-        },
-        chartOptionsActive: {}
+        }
       }
     }
   },

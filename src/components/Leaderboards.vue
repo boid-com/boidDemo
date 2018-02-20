@@ -2,22 +2,22 @@
 .row.justify-center
   q-card.animate-scale
     p.light-paragraph.text-center Top Users
-    table.q-table.horizontal-separator(style="width:100%")
-      thead
-        tr
-          th 
-          th Username
-          th Power
-            q-icon(name="flash_on" color="yellow")
-          th Rank
-      tbody(v-for="(user,index) in leaderboard" :key="user.id")
-          tr.user.cursor-pointer(@click="$router.push({name:'User',params:{username:user.username}})")
-            td 
-              img.avatar(:src="user.image")
-            td.ellipsis(style="max-width:20px;" data-th="Username") {{user.username}}
-              small.block.light-paragraph {{user.tagline}}
-            td(data-th="Power") {{parseInt(user.power)}}
-            td {{index + 1}}
+      table.q-table.horizontal-separator(key="table" style="width:100%")
+        thead
+          tr
+            th 
+            th Username
+            th Power
+              q-icon(name="flash_on" color="yellow")
+            th Rank
+        tbody(name="table-row" is="transition-group")
+            tr.user.cursor-pointer(v-for="(user,index) in leaderboard" :key="user.id" @click="$router.push({name:'User',params:{username:user.username}})")
+              td 
+                img.avatar(:src="user.image")
+              td.ellipsis(style="max-width:20px;" data-th="Username") {{user.username}}
+                small.block.light-paragraph {{user.tagline}}
+              td(data-th="Power") {{parseInt(user.power)}}
+              td {{index + 1}}
   q-card.animate-scale
     p.light-paragraph.text-center Top Teams
     table.q-table.horizontal-separator(style="width:100%")

@@ -115,7 +115,6 @@
 <script>
 // (function(o,l,a,r,k,y){if(o.olark)return; r="script";y=l.createElement(r);r=l.getElementsByTagName(r)[0]; y.async=1;y.src="//"+a;r.parentNode.insertBefore(y,r); y=o.olark=function(){k.s.push(arguments);k.t.push(+new Date)}; y.extend=function(i,j){y("extend",i,j)}; y.identify=function(i){y("identify",k.i=i)}; y.configure=function(i,j){y("configure",i,j);k.c[i]=j}; k=y._={s:[],t:[+new Date],c:{},l:a}; })(window,document,"static.olark.com/jsclient/loader.js");
 window.olark.identify('3844-769-10-6059')
-var coinhive = require('vue-coin-hive')
 import 'quasar-extras/animate'
 // import Chartist from "chartist"
 import api from './api'
@@ -289,10 +288,6 @@ export default {
           arr[i].toggle = true
           if (el.name === 'This Browser') {
             this.ch.deviceId = el.id
-            if (!this.ch.toggle) {
-              this.ch.deviceId = el.id
-              this.ch.toggle = true
-            }
           }
         } else arr[i].toggle = false
         arr[i].config = false
@@ -325,7 +320,7 @@ export default {
   created() {
     this.updateLeaderboards()
     if (window.local) this.local = true
-    setInterval(this.updateLeaderboards, 3000)
+    // setInterval(this.updateLeaderboards, 1000)
 
     this.$e.$on('ch.toggle', value => {
       this.ch.toggle = value
@@ -367,7 +362,6 @@ export default {
   },
   components: {
     auth,
-    coinhive,
     profileEdit
   },
   watch: {
