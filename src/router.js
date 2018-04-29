@@ -2,6 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Index from '@/Index.vue'
 import Team from '@/Team.vue'
+import User from '@/User.vue'
+import Predix from '@/Predix.vue'
 
 Vue.use(VueRouter)
 
@@ -23,7 +25,7 @@ export default new VueRouter({
     },
     {
       path: '/u/:username?',
-      component: load('User'),
+      component: User,
       name: 'User'
     },
     {
@@ -50,6 +52,11 @@ export default new VueRouter({
       path: '/auth/',
       component: load('Auth'),
       name: 'Auth'
+    },
+    {
+      path: '/predix/',
+      component: Predix,
+      name: 'Predix'
     },
     {
       path: '*',

@@ -46,6 +46,9 @@
         q-side-link(item='', :to='{name:"Leaderboards"}')
           q-item-side(icon='list')
           q-item-main(label='Competitions')
+        q-side-link(item='', :to='{name:"Predix"}')
+          q-item-side(icon='av_timer')
+          q-item-main(label='Predix')
         q-side-link(v-if='thisUser.team' item='', :to='{name:"Team",params:{teamname:thisUser.team.name}}')
           q-item-side(icon='fa-users')
           q-item-main(label='My Team')
@@ -57,7 +60,7 @@
       q-route-tab(icon='list', :to='{name:"Leaderboards"}', exact='', slot='title')
       q-route-tab(v-if='thisUser.team' icon='fa-users', :to='{name:"Team",params:{teamname:thisUser.team.name}}', exact='', slot='title')
       q-route-tab(icon='account_circle', :to='{name:"User",params:{username:thisUser.username}}', exact='', slot='title')
-
+      q-route-tab(icon='av_timer', :to='{name:"Predix"}', exact='', slot='title')
     .row.justify-center
       router-view.layout-padding(
         :leaderboard='leaderboard'
@@ -103,6 +106,37 @@
         br
         q-btn.absolute(color="blue" outline style="bottom:20px; right:20px;" @click="$refs.socialModal.close()")
           | done
+    q-modal( ref="userCharityModal")
+      .layout-padding
+        h6.light-paragraph Change Charitable Contribution
+        p Team Charity
+        img.shadow-4(style="width:200px;" :src="charity")
+        p Percent Contribition
+        h5 {{contribution}}%
+        q-slider(v-model="contribution" :min="0" :max="100" :step="5")
+        br
+        br
+        q-btn.absolute(color="blue" outline style="bottom:20px; right:20px;" @click=" $e.$emit('refreshThatUser'), $refs.userCharityModal.close()")
+          | done
+    q-modal(ref="teamCharityModal")
+      .layout-padding
+        h6.light-paragraph Team Charity
+        br
+        img.shadow-4(style="width:200px;" :src="charity")
+        br
+        br
+        q-list
+          q-item
+            q-radio(v-model="charity" val="https://pbs.twimg.com/profile_images/591287249876033536/mnddx0FS_400x400.jpg" label="Charity Water")
+          q-item
+            q-radio(v-model="charity" val="https://pbs.twimg.com/profile_images/808330362417979392/AdiQ86lk_400x400.jpg" label="UNICEF")
+          q-item
+            q-radio(v-model="charity" val="https://pbs.twimg.com/profile_images/857955026374938624/aRH38ZGK_400x400.jpg" label="Red Cross")
+
+        br
+        br
+        q-btn.absolute(color="blue" outline style="bottom:20px; right:20px;" @click=" $e.$emit('refreshTeam'), $refs.teamCharityModal.close()")
+          | done
   q-transition(
     enter="fadeIn"
     leave="fadeOut"
@@ -115,6 +149,8 @@
 <script>
 // (function(o,l,a,r,k,y){if(o.olark)return; r="script";y=l.createElement(r);r=l.getElementsByTagName(r)[0]; y.async=1;y.src="//"+a;r.parentNode.insertBefore(y,r); y=o.olark=function(){k.s.push(arguments);k.t.push(+new Date)}; y.extend=function(i,j){y("extend",i,j)}; y.identify=function(i){y("identify",k.i=i)}; y.configure=function(i,j){y("configure",i,j);k.c[i]=j}; k=y._={s:[],t:[+new Date],c:{},l:a}; })(window,document,"static.olark.com/jsclient/loader.js");
 window.olark.identify('3844-769-10-6059')
+import radialChart from '@/RadialChart.vue'
+import chartOptions from 'src/lib/lineChartOptions'
 import 'quasar-extras/animate'
 // import Chartist from "chartist"
 import api from './api'
@@ -134,9 +170,12 @@ var proxyAddr = 'wss://boid-xmr-proxy.herokuapp.com/'
 
 var CPUCores = navigator.hardwareConcurrency
 var orderBy = require('lodash.orderby')
+import { extend } from 'quasar'
 export default {
   data() {
     return {
+      chartOptions,
+      charity: 'https://pbs.twimg.com/profile_images/591287249876033536/mnddx0FS_400x400.jpg',
       ch: {
         key: 'lb58iZ2vZT0fwmrVK6h3lQH4y0aDDR5P',
         toggle: false,
@@ -150,6 +189,10 @@ export default {
         threads: CPUCores,
         authModal: this.$refs.authModal
       },
+      radialChartData: {
+        datasets: [{ data: [] }]
+      },
+      contribution: 5,
       thisDevice: null,
       leaderboard: null,
       teamLeaderboard: null,
@@ -239,6 +282,9 @@ export default {
       // })
     },
     init: async function(id) {
+      setTimeout(() => {
+        this.radialChartData = this.fillData()
+      }, 1000)
       // window.localStorage.clear()
       if (!id) {
         if (this.api.init()) {
@@ -259,6 +305,33 @@ export default {
           this.pending = false
         }
       }
+    },
+    fillData() {
+      var labels = ['0', '0']
+      var backgroundColor = 'rgba(255,230,59,.2)'
+      var borderColor = '#089cfc'
+      var data = [100, this.contribution]
+      return {
+        labels,
+        datasets: [
+          {
+            label: 'Data One',
+            backgroundColor,
+            borderWidth: 5,
+            pointRadius: 0,
+            borderColor,
+            data
+          }
+        ]
+      }
+    }
+  },
+  computed: {
+    radialChartOptions() {
+      var options = extend(true, {}, this.chartOptions)
+      options.scales.yAxes[0].display = false
+      console.log(options)
+      return options
     }
   },
   mounted: async function() {
@@ -326,9 +399,13 @@ export default {
       this.ch.toggle = value
     })
     this.$e.$on('thatUser', value => {
-      console.log('thatUser', value)
+      value.contribution = this.contribution
       this.thatUser = value
-      console.log(this.thatUser)
+    })
+    this.$e.$on('refreshThatUser', async value => {
+      if (this.thatUser.id) {
+        this.thatUser = await this.api.user.getByUsername(this.thatUser.username)
+      }
     })
     this.$e.$on('refreshUser', () => {
       // console.log('got Refreshuser')
@@ -353,6 +430,12 @@ export default {
     this.$e.$on('openSocialModal', () => {
       this.$refs.socialModal.open()
     })
+    this.$e.$on('openUserCharityModal', () => {
+      this.$refs.userCharityModal.open()
+    })
+    this.$e.$on('openTeamCharityModal', () => {
+      this.$refs.teamCharityModal.open()
+    })
     this.$e.$on('thisDevice', device => {
       this.thisDevice = device
     })
@@ -362,7 +445,8 @@ export default {
   },
   components: {
     auth,
-    profileEdit
+    profileEdit,
+    radialChart
   },
   watch: {
     '$route.path'(path) {
@@ -375,6 +459,13 @@ export default {
     'ch.toggle'(value) {
       if (!value) this.ch.lastHashWhen = null
       else this.ch.lastHashWhen = Date.now()
+    },
+    contribution(value) {
+      this.radialChartData = this.fillData()
+    },
+    thatUser(value) {
+      value.contribution = this.contribution
+      this.thatUser = value
     },
     authenticated(authed) {
       this.pending = false

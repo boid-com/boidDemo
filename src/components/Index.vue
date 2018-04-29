@@ -68,6 +68,13 @@ div
                   td {{token.tokenType.name}}
                   td {{token.balance.toFixed(2)}}
                   td
+              tbody
+                tr.tokenlist.cursor-pointer()
+                  td 
+                    img.tokenimg(src="https://upload.wikimedia.org/wikipedia/en/5/51/Qtum_logo.svg")
+                  td QTUM
+                  td 1,000,000
+                  td
           q-card.animate-scale
             p.light-paragraph.text-center Inventory
             p.text-centered.text-grey Inventory Items are coming soon...

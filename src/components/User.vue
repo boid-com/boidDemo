@@ -27,7 +27,13 @@
           div(style="margin:auto;")
             p.text-center {{parseInt(thatUser.powerRatings[0].power)}}
               q-icon.text-center(color="yellow" name='flash_on' style="font-size:50px;")
-              
+        q-card.animate-scale.relative-position(v-if="thatUser.powerRatings")
+          p.light-paragraph.text-center Charity
+          div(style="margin:auto;")
+            h5.text-center.light-paragraph {{thatUser.contribution}} %
+            p.text-center Contributing
+          q-btn.full-width(v-if="myProfile" color="green" @click="$e.$emit('openUserCharityModal')")
+                | change
         q-card.animate-scale.relative-position(v-if="thatUser.powerRatings")
           p.light-paragraph.text-center Social
           div(style="margin:auto;")
@@ -60,41 +66,43 @@ import { openURL } from 'quasar'
 
 export default {
   name: 'index',
-  data () {
+  data() {
     return {
       openURL
     }
   },
   computed: {
-    myProfile: function(){
-      if (this.thisUser && this.thatUser){
+    myProfile: function() {
+      if (this.thisUser && this.thatUser) {
         return this.thisUser.id === this.thatUser.id
-      }else return false
+      } else return false
     }
   },
-  methods: {
-
-  },
-  watch:{
-    'thatUser'(){
-          console.log('thatUser',this.thatUser)
-
+  methods: {},
+  watch: {
+    thatUser() {
+      console.log('thatUser', this.thatUser)
     },
-    "thisUser":function(val,oldVal){
-      if ((val.username != oldVal.username) && this.myProfile && this.$route.params.username){
-        setTimeout(()=>{
-          this.$router.push({name:"User",params:{username:this.thisUser.username}})
-        },1000)
+    thisUser: function(val, oldVal) {
+      if (val.username != oldVal.username && this.myProfile && this.$route.params.username) {
+        setTimeout(() => {
+          this.$router.push({ name: 'User', params: { username: this.thisUser.username } })
+        }, 1000)
       }
     }
-
   },
-  created(){
-    this.$e.$on('userUpdated',()=>{
-      console.log('userUpdated',this.myProfile,this.$route.params.username)
+  created: async function() {
+    if (this.$route.params.username) {
+      var validUser = await this.api.user.getByUsername(this.$route.params.username)
+      if (validUser) {
+        this.$e.$emit('thatUser', validUser)
+      } else this.$router.push('/')
+    }
+    this.$e.$on('userUpdated', () => {
+      console.log('userUpdated', this.myProfile, this.$route.params.username)
     })
   },
-  props:['thisUser','thatUser','api','authenticated'],
+  props: ['thisUser', 'thatUser', 'api', 'authenticated']
 }
 </script>
 
@@ -103,7 +111,8 @@ export default {
   padding: 10px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.14), 0 2px 1px -1px rgba(0, 0, 0, 0.12);
 }
-.tokenimg{
-  width:50px;
+
+.tokenimg {
+  width: 50px;
 }
 </style>

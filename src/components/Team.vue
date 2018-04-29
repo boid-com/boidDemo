@@ -36,6 +36,12 @@
       q-card.animate-scale.layout-padding(style="margin:10px; height:260px;")
         p.light-paragraph.text-center Team Power
         Chart(:chart-data="lineChartData" :options="chartOptions" :height="200" :width="200")
+      q-card.animate-scale(style="min-width:300px;")
+        p.light-paragraph.text-center Team Charity
+        .relative-position(style="height:200px;")
+          img.absolute-center(style="width:200px;" src="https://pbs.twimg.com/profile_images/591287249876033536/mnddx0FS_400x400.jpg")
+        q-btn(outline color="green" @click="$e.$emit('openTeamCharityModal')")
+          | Update
       q-card.animate-scale.layout-padding.relative-position(style="margin:10px; height:260px;")
         p.light-paragraph.text-center Team Progress
         h5.absolute-center.text-grey-8(v-if="progress < 100" style="margin-top:20px;") {{progress}}%
@@ -60,6 +66,7 @@
               small.block.light-paragraph {{user.tagline}}
             td(data-th="Power") {{parseInt(user.power)}}
             td {{index + 1}}
+
   .row.justify-center.gutter
     .layout-padding(v-if="!authenticated")
       .layout-padding

@@ -139,13 +139,13 @@ export default {
     checkInvitedBy: async function() {
       console.log(this.$route)
 
-      // var invitedBy = this.$route.params.username
-      // if (invitedBy) var validUser = await this.api.user.getByUsername(invitedBy)
-      // if (validUser){
-      //   this.form.invitedById = validUser.id
-      //   this.invitedByUser = validUser
-      // }
-      // this.$router.push("/")
+      var invitedBy = this.$route.params.username
+      if (invitedBy) var validUser = await this.api.user.getByUsername(invitedBy)
+      if (validUser) {
+        this.form.invitedById = validUser.id
+        this.invitedByUser = validUser
+      }
+      this.$router.push('/')
     }
   },
   props: ['thisUser', 'authenticated', 'api', 'thisModal'],
@@ -183,6 +183,7 @@ export default {
       console.log(window.local)
     },
     '$route.params.username': async function(username) {
+      console.log('found username')
       if (!username) return
       var user = await this.api.user.getByUsername(username)
       if (!user) return this.$router.push('/')
